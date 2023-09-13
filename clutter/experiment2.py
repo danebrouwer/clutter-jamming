@@ -6,7 +6,7 @@
 # control strategies with varying parameters. The
 # file also controls logging.
 
-# Import relevant modules.
+# Import relevant modules and functions.
 import yaml 
 import argparse
 import pybullet as pb

@@ -7,7 +7,7 @@
 # script controls the logging of information as
 # well as control strategies that will be tested.
 
-# Import relevant modules.
+# Import relevant modules and functions.
 import yaml 
 import argparse
 import pybullet as pb

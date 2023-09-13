@@ -1,15 +1,19 @@
 # File: base_controller.py
 # Authors: Dane Brouwer, Marion Lepert, Joshua Citron
-# Description: 
-#
+# Description: This file contains the base class
+# that the rest of the controllers inherit
+# (either directly or indirectly).
+
+# Import relevant modules and functions.
 import pybullet as pb
 import numpy as np 
 from collections import defaultdict
-
 from clutter.object2D import Object2D
 from clutter.cluttered_scene import ClutteredScene
 from clutter.utils import plot_contact_map, store_contact_locations, contact_at_tip
 
+# Contains functionality that is relevant for
+# other controllers.
 class BaseController():
 	def __init__(self, physics_client, params): 
 		self.physics_client = physics_client
@@ -19,7 +23,6 @@ class BaseController():
 		self.results_dict = defaultdict(list)
 		self.params = params
 		self.scene_depth = None
-
 		self.init_vel_mag = self.params['controller']['init_vel_mag']
 
 		self.progress_time_cutoff = self.params['controller']['progress_time_cutoff']
@@ -38,9 +41,9 @@ class BaseController():
 		self.bur_amp = params['controller']['bur_amp']
 		self.bur_freq = params['controller']['bur_freq'] * np.pi
 
-		self.num_obs = None # None
+		self.num_obs = None
 
-
+	# Resets values and regenerates a scene and robot
 	def reset(self, seed, scene_depth, avg_size):
 		self.seed = seed
 		self.scene_depth = scene_depth
@@ -55,31 +58,33 @@ class BaseController():
 		self.cluttered_scene.generate_clutter()
 
 		# Add puck robot
-		# self.scene_depth = self.params['scene']['depth'], used to be uncommented only commented for experiment3
 		puck_placement_height = self.params['puck']['height']/2.0 + self.cluttered_scene.scene_height + 0.01
 		puck_x_pos = self.params['puck']['init_x_pos']
 		puck_y_pos = np.random.uniform(-1.5,1.5)
 		puck_start_pos = np.array([puck_x_pos, puck_y_pos, puck_placement_height])
 		self.puck_obj = Object2D(pb, "forearmJoint", puck_start_pos)
-		# recently added this line
 		self.puck_obj.add_friction()
+
+		# Set relevant puck variables and goal position.
 		self.puck_length = self.params['puck']['length']
-		tip_goal_y_pos = np.random.uniform(-1.5,1.5) #(-1,1)
+		tip_goal_y_pos = np.random.uniform(-1.5,1.5)
 		tip_goal_x_pos = self.scene_depth + puck_x_pos + self.puck_length + 0.25
 		self.tip_goal_pos = np.array([tip_goal_x_pos, tip_goal_y_pos, puck_placement_height])
-		# pb.addUserDebugText(text="Target",
-		#       textPosition=self.tip_goal_pos+np.array(([-0.25,0.5,-0.5])),
-		# 	  textColorRGB=[0,1,0],textSize=1.0)
-		
 		self.puck_orn = self.params['puck']['orn']
 		tip_start_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), 
 					     self.puck_length*np.sin(self.puck_orn), 0])
 		x_prime = np.linalg.norm((self.tip_goal_pos-tip_start_pos))
-		self.x_prime_prev = x_prime #+ 0.5
-
+		self.x_prime_prev = x_prime
 		dx_prime = x_prime - self.x_prime_prev
 		self.dx_prime_prev = dx_prime
+		self.tip_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), self.puck_length*np.sin(self.puck_orn), 0]) #+ np.array([self.puck_length*np.cos(self.curr_orn), self.puck_length*np.sin(self.curr_orn), 0]
+		self.vec_to_goal = self.tip_goal_pos - self.tip_pos
+		target_orn = np.arctan2(self.vec_to_goal[1],self.vec_to_goal[0])
+		self.orn_diff = target_orn - self.puck_orn
+		self.dist_to_goal_initial = np.linalg.norm((self.vec_to_goal)) + self.init_vel_mag*self.progress_time_cutoff/240
 
+
+		# Reset variables.
 		self.stop_step = 0
 		self.tip_contact_step = 0
 		self.stop_step_cutoff_clock = self.params['controller']['stop_step_cutoff_clock']
@@ -94,13 +99,7 @@ class BaseController():
 		self.curr_step = 0
 		self.init_stuck = 0
 
-		self.tip_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), self.puck_length*np.sin(self.puck_orn), 0]) #+ np.array([self.puck_length*np.cos(self.curr_orn), self.puck_length*np.sin(self.curr_orn), 0]
-		self.vec_to_goal = self.tip_goal_pos - self.tip_pos
-		target_orn = np.arctan2(self.vec_to_goal[1],self.vec_to_goal[0])
-		self.orn_diff = target_orn - self.puck_orn
-		# print(self.vec_to_goal)
-		self.dist_to_goal_initial = np.linalg.norm((self.vec_to_goal)) + self.init_vel_mag*self.progress_time_cutoff/240
-
+	# Called at each step, updates position and orientation variables.
 	def update_state(self): 
 		self.puck_pos = self.puck_obj.get_position()
 		self.puck_orn = self.puck_obj.get_orientation()
@@ -123,9 +122,8 @@ class BaseController():
 		self.x_prime_prev = x_prime
 		self.v_prime_filt = dx_prime*self.gamma + (1-self.gamma)*self.dx_prime_prev
 		self.dx_prime_prev = dx_prime
-		# print(self.curr_step)
 		self.position_limit = self.dist_to_goal_initial - self.init_vel_mag * self.stuck_clock/240
-		# print("stuck clock: ", self.stuck_clock)
+
 	def execute_action(self): 
 		throw("Not implemented")
 
@@ -136,10 +134,8 @@ class BaseController():
 		self.update_state()
 		done = self.execute_action()
 
-		# print(contact_at_tip(self.puck_obj, self.tip_pos))
 		if not contact_at_tip(self.puck_obj, self.tip_pos):
 			self.broken_contact_ctr += 1
-			# print("broken contact: ", self.broken_contact_ctr)
 			if self.broken_contact_ctr > 5:
 				self.tip_contact_step = self.curr_step
 		else: 
@@ -151,9 +147,7 @@ class BaseController():
 		if self.map_contacts:
 			self.contact_map, self.force_map = store_contact_locations(self.puck_obj, self.contact_map, self.force_map)
 		return done, self.curr_step
-	
 		
-
 	def run_stop(self, vel_mag = 0.0, ang_vel_mag = 0.0, max_force = 10, max_torque = 15):
 		target_vel = vel_mag * self.target_vel_direction
 		target_ang_vel = ang_vel_mag * self.target_ang_vel_direction
@@ -186,25 +180,15 @@ class BaseController():
 	def at_goal(self):
 		return self.dist_to_goal < self.params['controller']['at_goal_dist']
 
-	def is_stuck_proprio(self): ## Instead implement separate version inside clock vs event cases?
-		# Marion version:
-		# return (self.curr_step > self.params['controller']['stuck_step_cutoff'] and (self.curr_step - self.stop_step) > 2*self.stop_step_cutoff) 
-		print(self.position_limit <= self.dist_to_goal)
+	def is_stuck_proprio(self):
 		return self.position_limit <= self.dist_to_goal 
 
-	def is_stuck_tactile(self): # Use contact_force_exceeds() instead?
-		# print(self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]))
-		# print(self.puck_obj.is_in_collision() and \
-		# 	self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]) > \
-		# 	self.params['controller']['f_thresh_excv'])
+	def is_stuck_tactile(self):
 		return self.puck_obj.is_in_collision() and \
 			self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]) > \
 			self.params['controller']['f_thresh_excv']
 	
-	def is_being_resisted(self): # Use contact_force_exceeds() instead?
-		# print(self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]))
-		# print(self.puck_obj.is_in_collision() and self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]) > \
-		# 		self.params['controller']['f_bur_thresh'])
+	def is_being_resisted(self):
 		return self.puck_obj.is_in_collision() and \
 	  		self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]) > \
-				self.params['controller']['f_bur_thresh']
+			self.params['controller']['f_bur_thresh']
