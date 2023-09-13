@@ -1,10 +1,8 @@
-import pdb
-from abc import ABC, abstractmethod
+# File: object.py
+# Author: Marion Lepert
+# Description: Object class.
 
 import numpy as np
-import pybullet
-import pybullet_data
-from pybullet_utils import bullet_client as bc
 import pkg_resources
 
 from clutter.contact_point import ContactPoint
@@ -60,51 +58,6 @@ class Object(ABC):
         
     def destruct(self):
         self.pb.removeBody(self.obj_id)
-
-
-    # @abstractmethod
-    # def reset_position(self, pos, ori):
-    #     pass
-
-
-    # @abstractmethod
-    # def apply_velocity(self, velocity):
-    #     pass
-
-    
-    # @abstractmethod
-    # def apply_force(self, force):
-    #     pass
-
-    
-    # @abstractmethod
-    # def apply_ang_velocity(self, ang_velocity):
-    #     pass
-
-
-    # @abstractmethod
-    # def apply_torque(self, torque):
-    #     pass
-
-    
-    # @abstractmethod
-    # def get_position(self):
-    #     pass
-
-    
-    # @abstractmethod
-    # def get_orientation(self):
-    #     pass
-
-    
-    # @abstractmethod
-    # def get_linear_velocity(self):
-    #     pass
-
-
-    # @abstractmethod
-    # def get_angular_velocity(self):
-    #     pass
 
 
     def neutralize_motors(self):

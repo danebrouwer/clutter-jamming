@@ -1,10 +1,8 @@
-import pdb
+# File: object2D.py
+# Author: Marion Lepert
+# Description: Object2D class.
 
-import pybullet
-import pybullet_data
-from pybullet_utils import bullet_client as bc
 import numpy as np
-
 from clutter.object import *
 
 class Object2D(Object):
@@ -124,21 +122,6 @@ class Object2D(Object):
                                       jointIndex=2,
                                       controlMode=self.pb.TORQUE_CONTROL,
                                       force=torque)
-
-
-    # def apply_linear_pd_control(self, des_pos, max_vel):
-    #     curr_pos = self.get_position()
-    #     curr_vel = self.get_linear_velocity()
-    #     kp, kv = 40, 0
-    #     # xd_dot = kp/kv * (des_pos - curr_pos)
-
-    #     # mu = saturate(max_vel/np.linalg.norm(xd_dot))
-        
-    #     # force = -kv * (curr_vel - mu * xd_dot)
-
-    #     force = kp * (des_pos - curr_pos) -kv * curr_vel
-    #     self.apply_force(force)
-
 
     def stop(self):
         """

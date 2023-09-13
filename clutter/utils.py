@@ -1,7 +1,13 @@
+# File: utils.py
+# Authors: Dane Brouwer, Marion Lepert
+# Description: Various functions
+# that are used throughout.
+
 import pybullet as pb 
 import pandas as pd
 import numpy as np 
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from sklearn import OPTICS
 
 
 # Function to plot contact force vectors
@@ -61,38 +67,28 @@ def plot_contact_map(contact_map, force_map):
     if contact_map is not None:
         x_contact = contact_map[:,0]
         y_contact = contact_map[:,1]
-        x_force = -force_map[:,0] # Force from paddle to objects (more interpretable)
+        x_force = -force_map[:,0]
         y_force = -force_map[:,1]
-        X, Y = -y_contact, x_contact #Remap to simulation frame
+        X, Y = -y_contact, x_contact
         U, V = -y_force, x_force
 
         X_clust = np.vstack((X,Y)).T
         F_clust = np.vstack((U,V)).T
         clust_model = OPTICS(min_samples=10, cluster_method = "dbscan", max_eps = 0.1, min_cluster_size=5) 
         clust_model.fit(X_clust)
-        # labels = clust_model.labels_[clust_model.ordering_]
-
-        # colors = ["g", "r", "b", "y", "c", "m", "tab:orange", "tab:brown"]
         num_clusters = np.max(clust_model.labels_) + 1
-        for i in range(num_clusters): #klass, color in zip(range(0, 8), colors):
+        for i in range(num_clusters):
             Xk = X_clust[clust_model.labels_ == i]
             Fk = F_clust[clust_model.labels_ == i]
             M = len(Xk[:, 0])
             if M > 0:
                 color = "C" + str(i)
-                # print(color)
                 plt.quiver(Xk[:, 0], Xk[:, 1], Fk[:, 0], Fk[:, 1], color=color, angles='xy',scale=100, width=0.0025*4, alpha=np.logspace(0.0, 1.0, M)/10) # 
 
-        # pdb.set_trace()
-        # print(np.max(clust_model.labels_))
-        # print(np.min(clust_model.labels_))
-        
         plt.quiver(X_clust[clust_model.labels_ == -1, 0], X_clust[clust_model.labels_ == -1, 1], F_clust[clust_model.labels_ == -1, 0], \
         F_clust[clust_model.labels_ == -1, 1], color="k", angles='xy',scale=100, width=0.0025*4, alpha=0.1) #
         plt.title("Clustered Contact Force Quiver")
 
-        # plt.scatter(X,Y)
-        # plt.quiver(X,Y,U,V,color=[0,0,1],angles='xy',scale=100) 
         plt.ylim(-1,5)
         plt.xlim(-2,2)
         ax = plt.gca()
@@ -127,19 +123,9 @@ def contact_at_tip(obj, tip_pos):
     if list_cps is not None: 
         for cp in list_cps:
             Fn_mag = cp.normal_force
-            # print(Fn_mag)
             contact_pos = np.array(cp.pos_on_A)
-            # print(contact_pos[0:2])
-            # print(tip_pos[0:2])
-            # pos_diff = contact_pos[0:1] - tip_pos[0:1]
-            # Fs1_mag = cp.lateral_friction_mag_1
-            # F_net = np.linalg.norm([Fn_mag, Fs1_mag])
-            # print("force: ", np.round(Fn_mag,4), 
-                #   "     distance: ", np.round(np.linalg.norm((contact_pos[0:2] - tip_pos[0:2])),4))
             if Fn_mag > 0.05 and Fn_mag < 5.0:
-
                 if np.linalg.norm((contact_pos[0:2] - tip_pos[0:2])) < 0.25:
-                    # print("force: ", Fn_mag)
                     return True
     return False    
 

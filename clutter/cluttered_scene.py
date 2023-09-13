@@ -1,20 +1,16 @@
-# Standard libraries 
-import pdb 
+# File: cluttered_scene.py
+# Author: Marion Lepert
+# Description: This file
+# contains classes and functions
+# that handle the creation of the scene in PyBullet.
 
 # Third-party libraries 
 import pybullet as pb
 import numpy as np 
-import time
-import pybullet_data
-from tqdm import tqdm 
-# import spatialdyn as dyn 
-# import ctrlutils
 
-# Project libraries 
+# Project libraries
 from clutter.contact_point import * 
 from clutter.object2D import *
-
-# np.random.seed(2)
 
 class GhostObj: 
   def __init__(self, id, shape, radius=None, halfExtents=None): 
@@ -23,32 +19,26 @@ class GhostObj:
     self.radius = radius 
     self.halfExtents = halfExtents
 
-
+# Implements the scene in PyBullet.
 class ClutteredScene: 
   def __init__(self, pb, planeId, scene_depth, avg_size,
-    paddle_buffer=0.1, initial_scene_size=[10,10], # final_scene_size=[3.75,5.5] 5,4
+    paddle_buffer=0.1, initial_scene_size=[10,10],
     min_mass=0.25, max_mass=0.75, min_height=0.6, max_height=0.8, num_obs=15):
-    # paddle_buffer=0.1, initial_scene_size=[10,10], final_scene_size=[5,4], 
-    # min_radius=0.2, max_radius=1.0, min_box_size=0.2, max_box_size=1.0, 
-    # min_mass=0.1, max_mass=1, min_height=0.1, max_height=0.5, num_obs=15): 
-    # max radius used to be 0.5
-    # min_radius=0.3, max_radius=0.5, min_box_size=0.4, max_box_size=0.6, 
     self.pb = pb 
     self.planeId = planeId
     self.scene_depth = scene_depth
     self.scene_area = 3.75 * 5.5
     self.scene_width = self.scene_area/self.scene_depth
-    
 
     self.paddle_mass = 100
     self.paddle_halfextent = 25
     self.paddle_buffer = paddle_buffer 
     self.initial_scene_size = initial_scene_size
     self.final_scene_size = [self.scene_depth, self.scene_width]
-    self.min_radius = avg_size - avg_size/4 # min_radius
-    self.max_radius = avg_size + avg_size/4 # max_radius
-    self.min_box_size = avg_size - avg_size/4 # min_box_size
-    self.max_box_size = avg_size + avg_size/4 # max_box_size
+    self.min_radius = avg_size - avg_size/4
+    self.max_radius = avg_size + avg_size/4
+    self.min_box_size = avg_size - avg_size/4
+    self.max_box_size = avg_size + avg_size/4
     self.min_mass = min_mass
     self.max_mass = max_mass
     self.fixed_obs_mass = 10.0
@@ -93,15 +83,11 @@ class ClutteredScene:
 
           if np.random.uniform(0,1) > 0.5: 
             shape = 'cylinder'
-            # num_cylinders += 1
-            obs_cid = self.pb.createCollisionShape(pybullet.GEOM_CYLINDER, radius=radius, height=height)
+            obs_cid = self.pb.createCollisionShape(pb.GEOM_CYLINDER, radius=radius, height=height)
           else: 
             shape = 'rectangle'
-            obs_cid = self.pb.createCollisionShape(pybullet.GEOM_BOX, halfExtents=half_extents)
+            obs_cid = self.pb.createCollisionShape(pb.GEOM_BOX, halfExtents=half_extents)
           
-          # shape = 'cylinder'
-          # obs_cid = self.pb.createCollisionShape(pybullet.GEOM_CYLINDER, radius=radius, height=height)
-
           obs_id = self.pb.createMultiBody(mass, obs_cid, basePosition=[x_obs_pos,y_obs_pos,height/2.0])
 
           self.obj_dict[obs_id] = GhostObj(id=obs_id, shape=shape, radius=radius, halfExtents=half_extents)
@@ -189,8 +175,7 @@ class ClutteredScene:
 
 
   def place_obstacles(self, use_labels=False): 
-    obs_fric_coeff = 0.4 # used to be 0.5
-      # for idx in range(num_obs): 
+    obs_fric_coeff = 0.4
     final_obs_ids = []
     if not use_labels: 
       self.obj_mass_labels = {}
@@ -206,7 +191,6 @@ class ClutteredScene:
       else: 
         if np.random.uniform(0,1) > 1.0: 
           mass = self.fixed_obs_mass
-          # num_fixed_obs += 1
           color = [0.8,0.161,0.212,1]
           self.obj_mass_labels[obs_id] = 1
         else: 
@@ -227,23 +211,17 @@ class ClutteredScene:
       if ghost_obj.shape == 'cylinder': 
         obs_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_CYLINDER, radius=ghost_obj.radius, height=height)
         obs_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_CYLINDER, radius=ghost_obj.radius, length=height, rgbaColor=color)
-        # pb.changeDynamics(obs_cid,linkIndex=-1,lateralFriction=0.75)
 
       elif ghost_obj.shape == 'rectangle': 
         half_extent = ghost_obj.halfExtents
         half_extent[2] = height/2.0
         obs_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent)
         obs_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
-        # pb.changeDynamics(obs_cid,linkIndex=-1,lateralFriction=0.75)
 
 
       final_obs_id = self.pb.createMultiBody(mass, baseCollisionShapeIndex=obs_cid, baseVisualShapeIndex=obs_vid, 
         basePosition=[obs_pos[0],obs_pos[1],height/2.0 + self.scene_height],
         baseOrientation=ghost_obj.ori)
-
-      # if ghost_obj.shape == 'rectangle':
-      #   pb.changeDynamics(final_obs_id,linkIndex=-1,mass=10)
-
 
       pb.changeDynamics(final_obs_id,linkIndex=-1,lateralFriction=obs_fric_coeff)
 
@@ -252,12 +230,10 @@ class ClutteredScene:
     self.obs_ids = final_obs_ids
 
   def generate_clutter(self): 
-    # time.sleep(10)
     self.setGUICamera()
     self.generate_paddles()
     self.generate_obstacles()
     self.squish_obstacles()
-    # time.sleep(1.0)
     self.remove_paddles()
     self.remove_obstacles(record_position=True)
     self.add_cabinet_walls()
@@ -316,9 +292,9 @@ class ClutteredScene:
     self.scene_height = bottom_width
 
   def setGUICamera(self):
-    camTargPos = {0.1, -0.28, 3.39} #{0.11, -0.28, 1.39} 
-    camDist = 4.5 # 3.46 #
-    pitch = -89.9 # -75 #
+    camTargPos = {0.1, -0.28, 3.39}
+    camDist = 4.5
+    pitch = -89.9
     yaw = -89.9
     pb.resetDebugVisualizerCamera(cameraDistance=camDist, cameraYaw=yaw, cameraPitch=pitch, cameraTargetPosition=camTargPos)
 

@@ -1,8 +1,6 @@
-import pdb
-
-import pybullet
-import pybullet_data
-from pybullet_utils import bullet_client as bc
+# File: contact_point.py
+# Author: Marion Lepert
+# Description: ContactPoint class.
 
 
 class ContactPoint():
