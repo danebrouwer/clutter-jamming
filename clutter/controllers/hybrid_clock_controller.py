@@ -1,21 +1,26 @@
-import pdb
+# File; hybrid_clock_controller.py
+# Authors: Dane Brouwer, Marion Lepert
+# Description: Contains class that implements
+# hybrid clock control strategy.
+
+# Import relevant modules, classes, and functions.
 import numpy as np
 import pybullet as pb
-
-# from clutter.controllers.burrow_controller import BurrowController
 from clutter.controllers.excavate_controller import ExcavateController
 from clutter.utils import store_contact_locations
 
+# Implements the hybrid clock control strategy.
 class HybridClockController(ExcavateController):  
     def __init__(self, physics_client, params):
         super().__init__(physics_client, params)
         self.test_case = "Hybrid Clock" 
-
+    # If not done with trial, excavate at set intervals. When
+    # not excavating, burrow.
     def execute_action(self): 
         if self.is_done(): 
             done = True 
             self.close_trial(self.test_case, self.dist_to_goal, self.curr_step, self.stuck_ctr, self.num_obs, self.seed)
-        elif self.excavate_trigger_timeout()  and self.total_step_thresh - self.curr_step >= self.excavate_step_thresh: 
+        elif self.excavate_trigger_timeout() and self.total_step_thresh - self.curr_step >= self.excavate_step_thresh: 
             done = False
             self.stuck_ctr += 1
             if np.random.uniform(0,1) < self.clock_excv_chance:

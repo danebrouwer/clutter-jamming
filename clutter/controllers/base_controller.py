@@ -24,23 +24,18 @@ class BaseController():
 		self.params = params
 		self.scene_depth = None
 		self.init_vel_mag = self.params['controller']['init_vel_mag']
-
 		self.progress_time_cutoff = self.params['controller']['progress_time_cutoff']
-		
 		self.position_limit = None
 		self.dist_to_goal_initial = None
 		self.init_stuck = None
 		self.vec_to_goal = None
 		self.stuck_clock = None
 		self.broken_contact_ctr = 0
-
 		self.entered_excavate = False
 		self.excavate_step_thresh = params["controller"]["excavate_step_thresh"]
 		self.trigger_excavate_step_thresh = params["controller"]["trigger_excavate_step_thresh"]
-
 		self.bur_amp = params['controller']['bur_amp']
 		self.bur_freq = params['controller']['bur_freq'] * np.pi
-
 		self.num_obs = None
 
 	# Resets values and regenerates a scene and robot
@@ -71,26 +66,17 @@ class BaseController():
 		tip_goal_x_pos = self.scene_depth + puck_x_pos + self.puck_length + 0.25
 		self.tip_goal_pos = np.array([tip_goal_x_pos, tip_goal_y_pos, puck_placement_height])
 		self.puck_orn = self.params['puck']['orn']
-		tip_start_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), 
-					     self.puck_length*np.sin(self.puck_orn), 0])
-		x_prime = np.linalg.norm((self.tip_goal_pos-tip_start_pos))
-		self.x_prime_prev = x_prime
-		dx_prime = x_prime - self.x_prime_prev
-		self.dx_prime_prev = dx_prime
-		self.tip_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), self.puck_length*np.sin(self.puck_orn), 0]) #+ np.array([self.puck_length*np.cos(self.curr_orn), self.puck_length*np.sin(self.curr_orn), 0]
-		self.vec_to_goal = self.tip_goal_pos - self.tip_pos
+		self.tip_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), self.puck_length*np.sin(self.puck_orn), 0])
 		target_orn = np.arctan2(self.vec_to_goal[1],self.vec_to_goal[0])
 		self.orn_diff = target_orn - self.puck_orn
 		self.dist_to_goal_initial = np.linalg.norm((self.vec_to_goal)) + self.init_vel_mag*self.progress_time_cutoff/240
 
 
 		# Reset variables.
-		self.stop_step = 0
 		self.tip_contact_step = 0
 		self.stop_step_cutoff_clock = self.params['controller']['stop_step_cutoff_clock']
 		self.stop_step_cutoff_event = self.params['controller']['stop_step_cutoff_event']
 		self.tip_contact_step_thresh = self.params['controller']['tip_pos_contact_thresh']
-		self.v_prime_thresh = self.params['controller']['v_prime_thresh']
 		self.contact_map = None
 		self.force_map = None
 		self.gamma = self.params['controller']['gamma']
@@ -100,33 +86,24 @@ class BaseController():
 		self.init_stuck = 0
 
 	# Called at each step, updates position and orientation variables.
-	def update_state(self): 
+	def update_state(self):
 		self.puck_pos = self.puck_obj.get_position()
 		self.puck_orn = self.puck_obj.get_orientation()
-
 		self.tip_pos = self.puck_pos + np.array([self.puck_length*np.cos(self.puck_orn), self.puck_length*np.sin(self.puck_orn), 0])
-
 		self.vec_to_goal = self.tip_goal_pos - self.tip_pos
 		target_orn = np.arctan2(self.vec_to_goal[1], self.vec_to_goal[0])
 		self.orn_diff = target_orn - self.puck_orn
-
 		self.dist_to_goal = np.linalg.norm((self.vec_to_goal))
 		self.target_vel_direction = (self.vec_to_goal) / self.dist_to_goal
 		self.target_ang_vel_direction = np.sign(self.orn_diff)
-
 		z_vec = np.array([0,0,1])
 		self.perp_vel_direction = np.cross(self.target_vel_direction, z_vec)
-
-		x_prime = np.linalg.norm((self.tip_goal_pos-self.tip_pos))
-		dx_prime = x_prime - self.x_prime_prev
-		self.x_prime_prev = x_prime
-		self.v_prime_filt = dx_prime*self.gamma + (1-self.gamma)*self.dx_prime_prev
-		self.dx_prime_prev = dx_prime
 		self.position_limit = self.dist_to_goal_initial - self.init_vel_mag * self.stuck_clock/240
 
 	def execute_action(self): 
 		throw("Not implemented")
 
+	# Steps the simulation forward.
 	def step(self): 
 		self.curr_step += 1
 		self.stuck_clock = self.curr_step - self.init_stuck
@@ -134,6 +111,8 @@ class BaseController():
 		self.update_state()
 		done = self.execute_action()
 
+		# Due to noisy contact interactions, begin to count tip contact
+		# if there is contact detected for a set number of time steps
 		if not contact_at_tip(self.puck_obj, self.tip_pos):
 			self.broken_contact_ctr += 1
 			if self.broken_contact_ctr > 5:
@@ -141,19 +120,18 @@ class BaseController():
 		else: 
 			self.broken_contact_ctr = 0
 		
-		if self.v_prime_filt < -self.v_prime_thresh: 
-			self.stop_step = self.curr_step
-			
 		if self.map_contacts:
 			self.contact_map, self.force_map = store_contact_locations(self.puck_obj, self.contact_map, self.force_map)
 		return done, self.curr_step
-		
+
+	# Stops motion of puck robot.	
 	def run_stop(self, vel_mag = 0.0, ang_vel_mag = 0.0, max_force = 10, max_torque = 15):
 		target_vel = vel_mag * self.target_vel_direction
 		target_ang_vel = ang_vel_mag * self.target_ang_vel_direction
 		self.puck_obj.apply_velocity(target_vel, max_force=max_force)
 		self.puck_obj.apply_ang_velocity(target_ang_vel, max_torque=max_torque)
 
+	# Stops trials and returns information about the details of the trial to be logged if appropriate.
 	def close_trial(self, test_case, dist_to_goal, curr_step, stuck_ctr, num_obs, seed):
 		self.run_stop()
 		if self.map_contacts:
@@ -183,11 +161,13 @@ class BaseController():
 	def is_stuck_proprio(self):
 		return self.position_limit <= self.dist_to_goal 
 
+	# Responsible for triggering an excavate.
 	def is_stuck_tactile(self):
 		return self.puck_obj.is_in_collision() and \
 			self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]) > \
 			self.params['controller']['f_thresh_excv']
 	
+	# Responsible for triggering a burrow.
 	def is_being_resisted(self):
 		return self.puck_obj.is_in_collision() and \
 	  		self.puck_obj.get_summed_contact_force_mags(exclusion_ids=[self.planeId, self.cluttered_scene.bottom_wall_id]) > \

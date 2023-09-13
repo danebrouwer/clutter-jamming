@@ -1,15 +1,20 @@
-import pdb 
+# File: straight_line_controller.py
+# Authors: Dane Brouwer, Marion Lepert
+# Description: Contains class that implements
+# straight line control strategy.
 
+# Import relevant classes.
 from clutter.controllers.base_controller import BaseController
 
+# Implements straight line control strategy.
 class StraightLineController(BaseController):
 	def __init__(self, physics_client, params): 
 		super().__init__(physics_client, params)
 		self.test_case = "Straight Line"
 		
 	def is_done(self): 
-		return self.at_goal() or (self.curr_step >= self.total_step_thresh) #or self.is_stuck_proprio(self.stop_step_cutoff_clock)
-
+		return self.at_goal() or (self.curr_step >= self.total_step_thresh)
+	
 	def execute_action(self): 
 		if self.is_done(): 
 			done = True
