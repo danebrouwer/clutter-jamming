@@ -1,0 +1,49 @@
+Metadata-Version: 2.1
+Name: clutter
+Version: 0.0.1
+Summary: Clutter
+Home-page: https://github.com/MarionLepert/clutter
+Author: Marion Lepert
+Author-email: marion.lepert@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+## Clutter 
+
+### Installation
+
+1. Create a conda environment 
+```
+conda create --name clutter_env python=3.8
+```
+2. Activate conda environment 
+```
+conda activate clutter_env 
+```
+3. Clone the github repo and cd into the repo
+```
+git clone git@github.com:MarionLepert/clutter.git
+cd clutter
+```
+4. Install the dependencies
+```
+pip install -r requirements.txt
+```
+5. Install the repo (run this command in the top level clutter directory)
+```
+pip install -e .
+```
+
+
+Optional: If you'd like to use a linkage robot, these libraries need to be installed: 
+- https://github.com/tmigimatsu/ctrl-utils
+- https://github.com/tmigimatsu/spatial-dyn
+
+
+### Run
+```
+python demo_puck.py
+```

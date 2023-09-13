@@ -1,0 +1,7 @@
+{
+  "description": "Config file to utilize in onshape-to-robot to generate forearm urdf",
+  "author": "Dane Brouwer",
+  "documentId": "197b4b0f330910e6f7524b6c",
+  "assemblyName": "forearm2D",
+  "outputFormat": "urdf"
+}

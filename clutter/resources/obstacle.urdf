@@ -1,0 +1,29 @@
+<robot name="obstacle">
+    
+  <link name="obstacle">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="0"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="1.0" length="0.4"/>
+      </geometry>
+      <material name="white">
+        <color rgba="0 0.28 0.5 1"/>
+      </material>
+    </visual>
+    
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="1.0" length="0.4"/>
+      </geometry>
+    </collision>
+  </link>
+
+    
+</robot>

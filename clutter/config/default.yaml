@@ -1,0 +1,48 @@
+num_trials: 50
+max_force:  10
+max_torque: 15
+total_step_thresh: 4800
+
+scene: 
+  depth: 3.75
+  grav_constant: -9.81
+
+puck: 
+  height: 1.0 
+  length: 1.58
+  orn: 0.0 
+  init_x_pos: -2
+
+controller: 
+  init_vel_mag: 0.5 # used to be 0.5
+  init_ang_vel_mag: 0.35
+  stop_step_cutoff_clock: 500 
+  stop_step_cutoff_event: 500
+  tip_pos_contact_thresh: 500
+  v_prime_thresh: 0.0005 #was 0.0003
+  progress_time_cutoff: 750
+  # stuck_step_cutoff: 300
+  gamma: 0.001
+  at_goal_dist: 0.01
+  pointed_at_goal_dist: 0.05
+  approaching_goal_dist: 0.1
+
+  # Burrow 
+  bur_amp:  2.0 #5.0 # was 1.0, then 5.0
+  bur_freq: 0.004 #0.004, then used to be 0.005
+  f_bur_thresh: 1.5
+
+  # Excavate 
+  excavate_step_thresh: 1200 # used to be 1000 
+  excavate_scale: 2
+  trigger_excavate_step_thresh: 1200 # used to be 1500
+  f_thresh_excv: 7.5
+  event_excv_chance: 0.75 
+  clock_excv_chance: 0.5 
+
+  stuck_ctr_thresh: 75
+
+
+
+
+  
