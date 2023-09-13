@@ -1,8 +1,10 @@
-import pdb 
+# File: base_controller.py
+# Authors: Dane Brouwer, Marion Lepert, Joshua Citron
+# Description: 
+#
 import pybullet as pb
 import numpy as np 
 from collections import defaultdict
-import tqdm
 
 from clutter.object2D import Object2D
 from clutter.cluttered_scene import ClutteredScene
