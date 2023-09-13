@@ -19,7 +19,7 @@ cd clutter
 ```
 pip install -r requirements.txt
 ```
-5. Install the repo (run this command in the top level clutter directory)
+5. Install the repo (run this command in the top level clutter-jamming directory)
 ```
 pip install -e .
 ```
