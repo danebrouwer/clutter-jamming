@@ -2,6 +2,7 @@
 # Authors: Dane Brouwer, Marion Lepert, Joshua Citron
 # Description: 
 #
+
 import numpy as np
 from clutter.controllers.straight_line_controller import StraightLineController
 
