@@ -4,7 +4,7 @@
 # values to be read and used by the python
 # scripts.
 
-num_trials: 50
+num_trials: 2
 max_force:  10
 max_torque: 15
 total_step_thresh: 4800

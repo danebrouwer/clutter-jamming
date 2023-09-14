@@ -9,12 +9,14 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from statannotations.Annotator import Annotator
+import os
 
 ###### DATA PROCESSING #####
 # TODO
-pkl_dir1 = "" # Fill in the directory for your log file.
-pkl_fn1 = ".pkl" # Fill in with log file name.
-pkl_df = pd.read_pickle(pkl_dir1 + pkl_fn1)
+pkl_dir1 = "2023_09_14" # Fill in the directory for your log file.
+pkl_fn1 = "155613_2Trials.pkl" # Fill in with log file name.
+pkl_df = pd.read_pickle(os.path.join(os.getcwd(), "Logging", pkl_dir1, pkl_fn1))
+
 
 for pkl_df in [pkl_df]:
 
@@ -43,21 +45,23 @@ HE_df = pkl_df[pkl_df["Control Type"] == "Hybrid Event"]
 plt.figure()
 ax = sns.boxplot(data=pkl_df,x='Control Type',y='Distance to goal')
 annotator = Annotator(ax, data=pkl_df, x='Control Type',y='Distance to goal',pairs=pairs4)
-annotator.configure(test="t-test_welch", text_format="star", loc="inside")
+annotator.configure(test="Wilcoxon", text_format="star", loc="inside")
 annotator.apply_and_annotate()
 print(plt.rcParams)
+
 plt.figure()
 ax = sns.boxplot(data=pkl_df,x='Control Type',y='Success time')
-annotator = Annotator(ax, data=pkl_df, x='Control Type',y='Success time',pairs=pairs4)
-annotator.configure(test="t-test_welch", text_format="star", loc="inside")
-annotator.apply_and_annotate()
+# annotator = Annotator(ax, data=pkl_df, x='Control Type',y='Success time',pairs=pairs4)
+# annotator.configure(test="Wilcoxon", text_format="star", loc="inside")
+# annotator.apply_and_annotate()
 
 plt.figure()
 ax = sns.boxplot(data=pkl_df,x='Control Type',y='Completion time')
 annotator = Annotator(ax, data=pkl_df, x='Control Type',y='Completion time',pairs=pairs4)
-annotator.configure(test="t-test_welch", text_format="star", loc="inside")
+annotator.configure(test="Wilcoxon", text_format="star", loc="inside")
 annotator.apply_and_annotate()
 
+# Compute success rates
 n_trials = len(SL_df)
 
 SL_failure = np.sum(np.isnan(SL_df["Success time"]))
