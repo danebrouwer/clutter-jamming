@@ -5,7 +5,7 @@
 
 # Import relevant modules and classes.
 import numpy as np
-from clutter.controllers.straight_line_controller import StraightLineController
+from controllers.straight_line_controller import StraightLineController
 
 # Implements the burrow control strategy.
 class BurrowController(StraightLineController):

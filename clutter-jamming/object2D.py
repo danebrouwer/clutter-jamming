@@ -3,7 +3,7 @@
 # Description: Object2D class.
 
 import numpy as np
-from clutter.object import *
+from object import *
 
 class Object2D(Object):
     """

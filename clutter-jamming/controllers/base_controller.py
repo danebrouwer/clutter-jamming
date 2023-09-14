@@ -8,9 +8,9 @@
 import pybullet as pb
 import numpy as np 
 from collections import defaultdict
-from clutter.object2D import Object2D
-from clutter.cluttered_scene import ClutteredScene
-from clutter.utils import plot_contact_map, store_contact_locations, contact_at_tip
+from object2D import Object2D
+from cluttered_scene import ClutteredScene
+from utils import plot_contact_map, store_contact_locations, contact_at_tip
 
 # Contains functionality that is relevant for
 # other controllers.
@@ -67,6 +67,7 @@ class BaseController():
 		self.tip_goal_pos = np.array([tip_goal_x_pos, tip_goal_y_pos, puck_placement_height])
 		self.puck_orn = self.params['puck']['orn']
 		self.tip_pos = puck_start_pos + np.array([self.puck_length*np.cos(self.puck_orn), self.puck_length*np.sin(self.puck_orn), 0])
+		self.vec_to_goal = self.tip_goal_pos - self.tip_pos
 		target_orn = np.arctan2(self.vec_to_goal[1],self.vec_to_goal[0])
 		self.orn_diff = target_orn - self.puck_orn
 		self.dist_to_goal_initial = np.linalg.norm((self.vec_to_goal)) + self.init_vel_mag*self.progress_time_cutoff/240

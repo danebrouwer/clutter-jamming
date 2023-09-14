@@ -7,8 +7,8 @@
 # Import relevant modules, classes, and functions.
 import numpy as np
 import pybullet as pb
-from clutter.controllers.excavate_controller import ExcavateController
-from clutter.utils import store_contact_locations, get_impeding_contact_loc
+from controllers.excavate_controller import ExcavateController
+from utils import store_contact_locations, get_impeding_contact_loc
 
 # Implements hybrid event control strategy.
 class HybridEventController(ExcavateController):  

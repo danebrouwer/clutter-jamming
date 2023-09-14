@@ -4,7 +4,7 @@
 # straight line control strategy.
 
 # Import relevant classes.
-from clutter.controllers.base_controller import BaseController
+from controllers.base_controller import BaseController
 
 # Implements straight line control strategy.
 class StraightLineController(BaseController):

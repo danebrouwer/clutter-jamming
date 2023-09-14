@@ -17,12 +17,12 @@ from tqdm import tqdm
 from datetime import datetime
 import os
 from collections import defaultdict
-from clutter.controllers.straight_line_controller import StraightLineController
-from clutter.controllers.burrow_controller import BurrowController
-from clutter.controllers.excavate_controller import ExcavateController
-from clutter.controllers.hybrid_clock_controller import HybridClockController
-from clutter.controllers.hybrid_event_controller import HybridEventController
-from clutter.utils import save_results
+from controllers.straight_line_controller import StraightLineController
+from controllers.burrow_controller import BurrowController
+from controllers.excavate_controller import ExcavateController
+from controllers.hybrid_clock_controller import HybridClockController
+from controllers.hybrid_event_controller import HybridEventController
+from utils import save_results
 
 # Parse command line arguments
 parser = argparse.ArgumentParser()

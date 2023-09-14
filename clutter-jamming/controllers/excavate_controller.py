@@ -6,8 +6,8 @@
 # Import relevant modules and classes.
 import numpy as np
 import pybullet as pb
-from clutter.controllers.burrow_controller import BurrowController
-from clutter.utils import store_contact_locations
+from controllers.burrow_controller import BurrowController
+from utils import store_contact_locations
 
 # Implements the excavate control strategy.
 class ExcavateController(BurrowController):  

@@ -9,8 +9,8 @@ import pybullet as pb
 import numpy as np 
 
 # Project libraries
-from clutter.contact_point import * 
-from clutter.object2D import *
+from contact_point import * 
+from object2D import *
 
 class GhostObj: 
   def __init__(self, id, shape, radius=None, halfExtents=None): 
@@ -209,14 +209,14 @@ class ClutteredScene:
       obs_pos = ghost_obj.pos 
 
       if ghost_obj.shape == 'cylinder': 
-        obs_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_CYLINDER, radius=ghost_obj.radius, height=height)
-        obs_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_CYLINDER, radius=ghost_obj.radius, length=height, rgbaColor=color)
+        obs_cid = self.pb.createCollisionShape(shapeType=pb.GEOM_CYLINDER, radius=ghost_obj.radius, height=height)
+        obs_vid = self.pb.createVisualShape(shapeType=pb.GEOM_CYLINDER, radius=ghost_obj.radius, length=height, rgbaColor=color)
 
       elif ghost_obj.shape == 'rectangle': 
         half_extent = ghost_obj.halfExtents
         half_extent[2] = height/2.0
-        obs_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent)
-        obs_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
+        obs_cid = self.pb.createCollisionShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent)
+        obs_vid = self.pb.createVisualShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
 
 
       final_obs_id = self.pb.createMultiBody(mass, baseCollisionShapeIndex=obs_cid, baseVisualShapeIndex=obs_vid, 
@@ -255,8 +255,8 @@ class ClutteredScene:
 
     # Bottom 
     half_extent = [self.final_scene_size[0]/2 + width , self.final_scene_size[1]/2 + width, bottom_width/2] #+ 1.0
-    wall_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent)
-    wall_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
+    wall_cid = self.pb.createCollisionShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent)
+    wall_vid = self.pb.createVisualShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
     self.bottom_wall_id = self.pb.createMultiBody(mass, baseCollisionShapeIndex=wall_cid, baseVisualShapeIndex=wall_vid, 
         basePosition=[self.final_scene_size[0]/2,0, bottom_width/2],
         baseOrientation=ori)
@@ -264,8 +264,8 @@ class ClutteredScene:
 
     # Back
     half_extent = [width/2, self.final_scene_size[1]/2, height/2]
-    wall_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent)
-    wall_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
+    wall_cid = self.pb.createCollisionShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent)
+    wall_vid = self.pb.createVisualShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
     self.pb.createMultiBody(mass, baseCollisionShapeIndex=wall_cid, baseVisualShapeIndex=wall_vid, 
         basePosition=[self.final_scene_size[0]+width/2.0 ,0,height/2.0 + bottom_width], #+ 0.25
         baseOrientation=ori)
@@ -273,8 +273,8 @@ class ClutteredScene:
 
     # Left
     half_extent = [self.final_scene_size[0]/2 + width , width/2, height/2] #+ 1.0
-    wall_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent)
-    wall_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
+    wall_cid = self.pb.createCollisionShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent)
+    wall_vid = self.pb.createVisualShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
     self.pb.createMultiBody(mass, baseCollisionShapeIndex=wall_cid, baseVisualShapeIndex=wall_vid, 
         basePosition=[self.final_scene_size[0]/2,-self.final_scene_size[1]/2-width/2,height/2.0 + bottom_width],
         baseOrientation=ori)
@@ -282,8 +282,8 @@ class ClutteredScene:
 
     # Right
     half_extent = [self.final_scene_size[0]/2 + width , width/2, height/2] #+ 1.0
-    wall_cid = self.pb.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent)
-    wall_vid = self.pb.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
+    wall_cid = self.pb.createCollisionShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent)
+    wall_vid = self.pb.createVisualShape(shapeType=pb.GEOM_BOX, halfExtents=half_extent, rgbaColor=color)
     self.pb.createMultiBody(mass, baseCollisionShapeIndex=wall_cid, baseVisualShapeIndex=wall_vid, 
         basePosition=[self.final_scene_size[0]/2,self.final_scene_size[1]/2+width/2,height/2.0 + bottom_width],
         baseOrientation=ori)

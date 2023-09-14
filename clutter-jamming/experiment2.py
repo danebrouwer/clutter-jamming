@@ -16,10 +16,10 @@ from tqdm import tqdm
 from datetime import datetime
 import os
 from collections import defaultdict
-from clutter.controllers.straight_line_controller import StraightLineController
-from clutter.controllers.burrow_controller import BurrowController
-from clutter.controllers.excavate_controller import ExcavateController
-from clutter.utils import save_results
+from controllers.straight_line_controller import StraightLineController
+from controllers.burrow_controller import BurrowController
+from controllers.excavate_controller import ExcavateController
+from utils import save_results
 
 # Parse command line arguments.
 parser = argparse.ArgumentParser()

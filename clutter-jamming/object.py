@@ -5,7 +5,7 @@
 import numpy as np
 import pkg_resources
 
-from clutter.contact_point import ContactPoint
+from contact_point import ContactPoint
 
 
 class Object():
@@ -29,11 +29,8 @@ class Object():
 
 
     def create_object(self):
-        if self.name == "ypaddle":
-            filename = self.name + str(self.dim) + "D_copy_{depth}.urdf".format(depth=self.scene_depth)
-        else:
-            filename = self.name + str(self.dim) + "D.urdf"
-        obj_urdf = pkg_resources.resource_filename('clutter',
+        filename = self.name + str(self.dim) + "D.urdf"
+        obj_urdf = pkg_resources.resource_filename('clutter-jamming',
                                                    'resources/'+filename)
         
         self.obj_id = self.pb.loadURDF(fileName=obj_urdf,
