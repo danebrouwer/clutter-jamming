@@ -12,8 +12,8 @@ conda activate clutter_env
 ```
 3. Clone the github repo and cd into the repo
 ```
-git clone git@github.com:danebrouwer/clutter-jamming.git
-cd clutter
+git clone https://github.com/danebrouwer/clutter-jamming.git
+cd clutter-jamming
 ```
 4. Install the dependencies
 ```
@@ -25,7 +25,10 @@ pip install -e .
 ```
 
 ### Run
-Let's walk through the two experiments that can be run.
+Let's walk through the two experiments that can be run. Before running either experiment, enter
+```
+cd clutter-jamming
+```
 #### Experiment 1
 This experiment tests a given set of control strategies for a given number of pseudo-randomly generated scenes. You can run the experiment like this:
 ```
