@@ -53,7 +53,7 @@ python analyze_results1.py
 ```
 
 #### Experiment 2
-Analyzing results for experiment two takes slightly more time than experiment 1. As with experiment 1, find and complete the TODO tags. This includes everything from experiment 1 plus filling in the parameters varied in the trial. Some plots are commented out, but feel free to uncomment them. To see the plots, enter
+Analyzing results for experiment two takes slightly more time than experiment 1. As with experiment 1, find and complete the TODO tags but this time in analyze_results2.py. This includes the TODOS from experiment 1 plus filling in the parameters varied in the trial. Some plots are commented out, but feel free to uncomment them. To see the plots, enter
 ```
 python analyze_results2.py
 ```
