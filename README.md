@@ -44,7 +44,7 @@ python experiment2.py
 As with experiment 1, the same command line arguments apply.
 
 ### Analyzing Results
-Whether you want to analyze trials that you have run or ones already in the repo, let's walk through how one generates plots from a log file. This differs from experiment to experiment, so we will go through both.
+Let's walk through how one generates plots from a log file. This differs from experiment to experiment, so we will go through both.
 
 #### Experiment 1
 For a given log file to investigate, navigate to analyze_results1.py and fill in all the TODO tags. This includes filling in the directory that contains the log file of interest as well as filling in the name of the actual log file. After doing those two things, enter the following to generate the plots.
