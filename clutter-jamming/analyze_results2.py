@@ -8,12 +8,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy
+import os
 
 ###### DATA PROCESSING #####
 # TODO
 pkl_dir = "" # Fill in with the directory your log file is in
 pkl_fn = "" # Fill in with the name of the pkl file
 pkl_df = pd.read_pickle(pkl_dir + pkl_fn)
+pkl_df = pd.read_pickle(os.path.join(os.getcwd(), "Logging", pkl_dir, pkl_fn))
 
 for pkl_df in [pkl_df]:
 
@@ -122,32 +124,28 @@ reshaped_cte_filt = scipy.ndimage.gaussian_filter(reshaped_cte, sigma=1.0, order
 plt.rcParams.update({'font.size': 32})
 
 fig5, ax5 = plt.subplots(figsize=(13.5,9.5))
-levels = np.arange(3.4, 6.0, 0.3)
-plot = ax5.contour(XB, YB, reshaped_dtgb_filt, levels)
+plot = ax5.contour(XB, YB, reshaped_dtgb_filt)
 ax5.clabel(plot, inline=True, fontsize=32)
 ax5.set_ylabel('Burrow frequency (Hz)')
 ax5.set_xlabel('Burrow amplitude')
 # ax5.set_title('Burrow distance to goal')
 
 fig6, ax6 = plt.subplots(figsize=(13.5,9.5))
-levels = np.arange(1.2, 1.70, 0.05)
-plot = ax6.contour(XB, YB, reshaped_ctb_filt, levels)
+plot = ax6.contour(XB, YB, reshaped_ctb_filt)
 ax6.clabel(plot, inline=True, fontsize=32)
 ax6.set_ylabel('Burrow frequency (Hz)')
 ax6.set_xlabel('Burrow amplitude')
 # ax6.set_title('Burrow completion time')
 
 fig7, ax7 = plt.subplots(figsize=(13.5,9.5))
-levels = np.arange(2.2, 6.0, 0.3)
-plot = ax7.contour(XE, YE, reshaped_dtge_filt, levels)
+plot = ax7.contour(XE, YE, reshaped_dtge_filt)
 ax7.clabel(plot, inline=True, fontsize=32)
 ax7.set_ylabel('Trigger excavate time (s)')
 ax7.set_xlabel('Excavate duration (s)')
 # ax7.set_title('Excavate distance to goal')
 
 fig8, ax8 = plt.subplots(figsize=(13.5,9.5))
-levels = np.arange(1.2, 1.60, 0.05)
-plot = ax8.contour(XE, YE, reshaped_cte_filt, levels)
+plot = ax8.contour(XE, YE, reshaped_cte_filt)
 ax8.clabel(plot, inline=True, fontsize=32)
 ax8.set_ylabel('Trigger excavate time (s)')
 ax8.set_xlabel('Excavate duration (s)')
